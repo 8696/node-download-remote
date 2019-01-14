@@ -1,47 +1,56 @@
 const Download = require('../main');
+const path = require('path');
+
+/*
+
+let res = Download.download({
+    url: 'https://www.baidu.com',
+    dir: path.resolve(__dirname + '/uploads11'),
+    fileName: 'asdsad.html',
+    autoSuffix: true
+});
+res.then(res => {
+    console.log(res);
+});
+*/
 
 
 let download = new Download();
 
-
 download.setConfig({
-    localDir: __dirname + '/uploads'
+    dir: path.resolve(__dirname + '/uploads'),
+    meanwhile: 1,
 });
 
 let list = [
-    'https://www.baidu.com',
-    'https://www.baidu.com',
-    'https://www.google.com',
-    'https://www.baidu.com',
-    'https://www.baidu.com',
-    'https://www.baidu.com',
-    'https://www.baidu.com',
-    'http://www.longjinwen.com/asd'
-
+    // 'http://v.51vimeo.com/data/attachment/video/1809/27/5bac3f15a4397.mp4',
+    // 'https://www.baidu.com',
+    // 'http://v.51vimeo.com/data/attachment/video/1809/27/5bac3f15a4397.mp4',
+    // 'http://v.51vimeo.com/data/attachment/video/1809/27/5bac3f15a4397.mp4',
+    // 'https://www.google.com',
+    // 'https://www.baidu.com',
+    {
+        url: 'https://www.baidu.com',
+        // dir: path.resolve(__dirname + '/uploads4'),
+        fileName: 'uploads.html',
+        autoSuffix: false
+    },
+    'http://a.hiphotos.baidu.com/image/pic/item/728da9773912b31b38b68ca38b18367adbb4e166.jpg',
 ];
-list.forEach(item => {
-    download.push({
-        url: item,
-    });
+
+
+download.push({
+    url: 'https://www.baidu.com',
+    dir: path.resolve(__dirname + '/uploads4'),
+    fileName: 'uploads.html',
+    autoSuffix: true
 });
 
-try {
-    let res = download.exec();
+let aaa = download.exec();
 
-    res.then(res => {
-        console.log(res);
-    }).catch(err => {
-        console.error(err);
-    });
-
-} catch (e) {
-
-}
-
-
-
-
-
-
+aaa.then(res => {
+    console.log(res.length);
+    console.log(res);
+});
 
 

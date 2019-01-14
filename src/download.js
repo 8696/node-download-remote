@@ -3,7 +3,7 @@ const mimeTypes = require('mime-types');
 const makeDir = require('make-dir');
 const path = require('path');
 const fs = require('fs');
-
+const cache = new Map();
 
 Download.makeKey = function () {
     let s = [],
@@ -17,45 +17,60 @@ Download.makeKey = function () {
 };
 
 
-Download.download = function (options) {
-    return new Promise((resolve, reject) => {
-        options.start && options.start();
+Download.download = function (options, hooks = {}) {
+    return new Promise(async (resolve, reject) => {
+        !cache.has('dir') && (cache.set('dir', []));
+        let dirs = cache.get('dir');
+        if (!dirs.includes(options.dir)) {
+            let newDir = await makeDir(options.dir);
+            dirs.push(newDir);
+            cache.set('dir', dirs);
+        }
+
+        hooks.start && hooks.start();
+
         setTimeout(function () {
-            console.error('2');
-
-            request(options.url, function () {
-
-            })
-                .on('error', (response) => {
-                    reject({
-                        code: '',
-                        msg: response.code
-                    });
-                    options.complete && options.complete();
-
-                })
-                .on('response', (response) => {
-
-                    let name = mimeTypes['extension'](response.headers['content-type']),
-                        filePath = path.resolve(options.dir, Download.makeKey()) + '.' + name;
-                    if (response.statusCode === 200) {
-                        response.pipe(fs.createWriteStream(filePath))
-                            .on('close', () => {
-                                resolve(filePath);
-
-                                options.complete && options.complete();
-                            });
-
-                    } else {
-                        reject({
-                            code: response.statusCode,
-                            msg: ''
-                        });
-                        options.complete && options.complete();
-
-                    }
-
+            request(options.url)
+                ['on']('error', (response) => {
+                reject({
+                    status: 0,
+                    msg: response.code,
+                    resource: options.url,
                 });
+                hooks.complete && hooks.complete();
+            })
+                ['on']('response', (response) => {
+                let suffix = mimeTypes['extension'](response.headers['content-type']);
+
+                let fileName = options.fileName || (Download.makeKey() + '.' + suffix);
+                fileName = options.autoSuffix === true ? (fileName + '.' + suffix) : fileName;
+                let filePath = path.resolve(options.dir, fileName);
+
+                if (response.statusCode === 200) {
+                    response.pipe(fs.createWriteStream(filePath))
+                        .on('close', () => {
+                            resolve({
+                                status: 200,
+                                msg: 'success',
+                                resource: options.url,
+                                data: {
+                                    filePath: filePath,
+                                    contentType: response.headers['content-type'],
+                                }
+                            });
+                            hooks.complete && hooks.complete();
+                        });
+
+                } else {
+                    reject({
+                        status: response.statusCode,
+                        msg: 'Response status code must be 200',
+                        resource: options.url
+                    });
+                    hooks.complete && hooks.complete();
+                }
+
+            });
 
         }, 1000);
     });
@@ -63,79 +78,101 @@ Download.download = function (options) {
 
 
 function Download() {
-
+    this.list = [];
+    this.downloadDefaultConfig = {meanwhile: 1, dir: ''};
+    this.optionConfig = {};
+    this.defaultOptionConfig = {
+        dir: this.downloadDefaultConfig.dir,
+        fileName: null,
+        autoSuffix: false
+    };
 }
 
 
-Download.prototype.list = [];
-Download.prototype.config = {};
-
 Download.prototype.exec = function () {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
         let data = [],
             j = 0,
             i = 0,
             l = this.list.length,
-            dir = await makeDir(path.resolve(this.config.localDir)),
+            end = () => {
+                if (j === l) {
+                    resolve(data);
+                }
+            },
             next = () => {
                 i++;
-                return Download.download({
-                    url: this.list.splice(0, 1)[0].url,
-                    dir,
-                    complete: async () => {
-                        j++;
-                        console.log('j' + j);
-
-                        if (this.list.length > 0) {
-                            i--;
-                            next()
-                                .then(res => {
-                                    data.push(res);
-                                })
-                                .catch(err => {
-                                    data.push(err);
-
-                                });
-                        }
-                        if (j === l) {
-                            resolve(data);
-                        }
+                let option = this.list.splice(0, 1)[0];
+                // console.error(option);
+                return Download.download(
+                    {
+                        url: option.url,
+                        dir: option.dir || this.optionConfig.dir,
+                        fileName: option.fileName,
+                        autoSuffix: option.autoSuffix,
                     },
-                    start: async () => {
-                        console.error('1');
-                        if (i <= 2 && this.list.length > 0) {
-                            next()
-                                .then(res => {
-                                    data.push(res);
-                                })
-                                .catch(err => {
-                                    data.push(err);
-                                });
-                        }
-                        if (j === l) {
-                            resolve(data);
+                    {
+                        complete: () => {
+                            j++;
+                            console.log('j' + j);
+                            if (this.list.length > 0) {
+                                i--;
+                                exec();
+                            }
+                        },
+                        start: () => {
+                            if (i <= this.optionConfig.meanwhile - 1 && this.list.length > 0) {
+                                exec();
+                            }
                         }
                     }
-
-                });
+                );
+            },
+            exec = () => {
+                next()
+                    .then(res => {
+                        data.push(res);
+                        end();
+                    })
+                    .catch(err => {
+                        data.push(err);
+                        end();
+                    });
             };
-        next()
-            .then(res => {
-                data.push(res);
-            })
-            .catch(err => {
-                data.push(err);
-            });
 
+        exec();
     });
 
 };
 Download.prototype.push = function (options) {
-    this.list.push(options);
+    switch (Object.prototype.toString.call(options)) {
+        case '[object Array]': {
+            this.list = this.list.concat(options);
+            break;
+        }
+        case '[object String]': {
+            this.list.push(options);
+            break;
+        }
+        case '[object Object]': {
+            this.list.push(options);
+            break;
+        }
+    }
+    this.list.forEach((item, index) => {
+        // 独立配置
+        if (typeof item === 'string') {
+            this.list[index] = Object.assign(JSON.parse(JSON.stringify(this.defaultOptionConfig)), {url: item});
+        } else if (typeof item === 'object') {
+            this.list[index] = Object.assign(JSON.parse(JSON.stringify(this.defaultOptionConfig)), item);
+        }
+
+    });
+
     return this;
 };
 Download.prototype.setConfig = function (config) {
-    this.config = Object.assign(config, this.config);
+    this.optionConfig = Object.assign(JSON.parse(JSON.stringify(this.downloadDefaultConfig)), config);
     return this;
 };
 module.exports = Download;
