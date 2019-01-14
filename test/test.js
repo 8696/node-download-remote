@@ -14,6 +14,8 @@ let list = [
     'https://www.google.com',
     'https://www.baidu.com',
     'https://www.baidu.com',
+    'https://www.baidu.com',
+    'https://www.baidu.com',
     'http://www.longjinwen.com/asd'
 
 ];
