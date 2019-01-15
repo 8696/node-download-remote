@@ -12,7 +12,7 @@
 #### 使用
 ##### 
 ```javascript
-const Download = require('node-download-remote');
+const Download = require('node-remote-file-save');
 
 // *** 001
 

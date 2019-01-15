@@ -1,6 +1,6 @@
 {
   "name": "node-remote-file-save",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "nodejs下载远程文件",
   "main": "main.js",
   "scripts": {
