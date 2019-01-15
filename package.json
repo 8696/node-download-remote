@@ -1,5 +1,5 @@
 {
-  "name": "download-remote",
+  "name": "node-download-remote",
   "version": "1.0.0",
   "description": "nodejs下载远程文件",
   "main": "main.js",
@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/8696/node-download-remote.git"
   },
-  "author": "",
+  "author": "long<204084802@qq.com>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/8696/node-download-remote/issues"
@@ -21,5 +21,10 @@
     "mime-types": "^2.1.21",
     "node-uuid": "^1.4.8",
     "request": "^2.88.0"
-  }
+  },
+  "keywords": [
+    "download",
+    "download-file",
+    "download-remote"
+  ]
 }

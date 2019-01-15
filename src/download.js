@@ -25,52 +25,50 @@ Download.download = function (options, hooks = {}) {
 
         hooks.start && hooks.start();
 
-        setTimeout(function () {
-            console.error('k' + (++k));
-            request(options.url)
-                ['on']('error', (response) => {
+        console.error('k' + (++k));
+        request(options.url)
+            ['on']('error', (response) => {
+            reject({
+                status: 0,
+                msg: response.code,
+                resource: options.url,
+            });
+            hooks.complete && hooks.complete();
+        })
+            ['on']('response', (response) => {
+            let suffix = mimeTypes['extension'](response.headers['content-type']);
+
+            let fileName = options.fileName || (Download.makeKey() + '.' + suffix);
+            fileName = (options.autoSuffix === true && options.fileName) ? (fileName + '.' + suffix) : fileName;
+            let filePath = path.resolve(options.dir, fileName);
+
+            if (response.statusCode === 200) {
+                response.pipe(fs.createWriteStream(filePath))
+                    .on('close', () => {
+
+                        resolve({
+                            status: 200,
+                            msg: 'success',
+                            resource: options.url,
+                            data: {
+                                filePath: filePath,
+                                contentType: response.headers['content-type'],
+                            }
+                        });
+                        hooks.complete && hooks.complete();
+                    });
+
+            } else {
                 reject({
-                    status: 0,
-                    msg: response.code,
-                    resource: options.url,
+                    status: response.statusCode,
+                    msg: 'Response status code must be 200',
+                    resource: options.url
                 });
                 hooks.complete && hooks.complete();
-            })
-                ['on']('response', (response) => {
-                let suffix = mimeTypes['extension'](response.headers['content-type']);
+            }
 
-                let fileName = options.fileName || (Download.makeKey() + '.' + suffix);
-                fileName = (options.autoSuffix === true && options.fileName) ? (fileName + '.' + suffix) : fileName;
-                let filePath = path.resolve(options.dir, fileName);
+        });
 
-                if (response.statusCode === 200) {
-                    response.pipe(fs.createWriteStream(filePath))
-                        .on('close', () => {
-
-                            resolve({
-                                status: 200,
-                                msg: 'success',
-                                resource: options.url,
-                                data: {
-                                    filePath: filePath,
-                                    contentType: response.headers['content-type'],
-                                }
-                            });
-                            hooks.complete && hooks.complete();
-                        });
-
-                } else {
-                    reject({
-                        status: response.statusCode,
-                        msg: 'Response status code must be 200',
-                        resource: options.url
-                    });
-                    hooks.complete && hooks.complete();
-                }
-
-            });
-
-        }, 1000);
     });
 };
 
@@ -89,6 +87,10 @@ function Download() {
 
 Download.prototype.exec = function () {
     return new Promise((resolve) => {
+        if (this.list.length === 0) {
+            resolve([]);
+            return;
+        }
         let data = [],
             j = 0,
             i = 0,
