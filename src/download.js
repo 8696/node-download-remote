@@ -90,7 +90,7 @@ function Download() {
 
 
 Download.prototype.exec = function () {
-    return new Promise(async (resolve) => {
+    return new Promise((resolve) => {
         let data = [],
             j = 0,
             i = 0,
