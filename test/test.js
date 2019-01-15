@@ -156,7 +156,6 @@ res3.then(res => {
     *!/
 
 */
-/*
 
 // *** 004
 
@@ -179,8 +178,8 @@ let res4 = download2.exec();
 
 res4.then(res => {
     console.log(res);
-    /!*
-    [
+
+    /*[
         { status: 0,
         msg: 'Request error: ETIMEDOUT',
         resource: 'https://www.google.com' },
@@ -200,9 +199,9 @@ res4.then(res => {
         msg: 'Request error: Invalid URI "www.google.com"',
         resource: 'www.google.com' }
     ]
-    *!/
+    */
 });
-*/
+/*
 
 
 // *** 005
@@ -211,6 +210,7 @@ console.log(Download.request);
 console.log(Download.makeDir);
 console.log(Download.nodeUuid);
 console.log(Download.mimeTypes);
+*/
 
 
 

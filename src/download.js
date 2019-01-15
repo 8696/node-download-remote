@@ -26,7 +26,6 @@ function Download() {
 Download.makeKey = function () {
     return uuid.v4().replace(/-/g, '');
 };
-let k = 0;
 
 Download.download = function (options, hooks = {}) {
     return new Promise(async (resolve, reject) => {
@@ -40,7 +39,6 @@ Download.download = function (options, hooks = {}) {
 
         hooks.start && hooks.start();
 
-        console.error('k' + (++k));
         try {
             request(options.url)
                 ['on']('error', (response) => {
@@ -108,7 +106,6 @@ Download.prototype.exec = function () {
             i = 0,
             l = this.list.length,
             end = () => {
-                --k;
                 if (j === l) {
                     resolve(data);
                 }
@@ -127,7 +124,6 @@ Download.prototype.exec = function () {
                     {
                         complete: () => {
                             j++;
-                            console.log('j' + j);
                             if (this.list.length > 0) {
                                 i--;
                                 exec();
