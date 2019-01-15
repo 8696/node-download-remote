@@ -6,8 +6,23 @@ const path = require('path');
 const fs = require('fs');
 const cache = new Map();
 
+Download.nodeUuid = uuid;
 Download.makeDir = makeDir;
+Download.request = request;
+Download.mimeTypes = mimeTypes;
 
+
+
+function Download() {
+    this.list = [];
+    this.downloadDefaultConfig = {meanwhile: 1, dir: ''};
+    this.optionConfig = {};
+    this.defaultOptionConfig = {
+        dir: this.downloadDefaultConfig.dir,
+        fileName: null,
+        autoSuffix: false
+    };
+}
 Download.makeKey = function () {
     return uuid.v4().replace(/-/g, '');
 };
@@ -26,63 +41,60 @@ Download.download = function (options, hooks = {}) {
         hooks.start && hooks.start();
 
         console.error('k' + (++k));
-        request(options.url)
-            ['on']('error', (response) => {
-            reject({
-                status: 0,
-                msg: response.code,
-                resource: options.url,
-            });
-            hooks.complete && hooks.complete();
-        })
-            ['on']('response', (response) => {
-            let suffix = mimeTypes['extension'](response.headers['content-type']);
-
-            let fileName = options.fileName || (Download.makeKey() + '.' + suffix);
-            fileName = (options.autoSuffix === true && options.fileName) ? (fileName + '.' + suffix) : fileName;
-            let filePath = path.resolve(options.dir, fileName);
-
-            if (response.statusCode === 200) {
-                response.pipe(fs.createWriteStream(filePath))
-                    .on('close', () => {
-
-                        resolve({
-                            status: 200,
-                            msg: 'success',
-                            resource: options.url,
-                            data: {
-                                filePath: filePath,
-                                contentType: response.headers['content-type'],
-                            }
-                        });
-                        hooks.complete && hooks.complete();
-                    });
-
-            } else {
+        try {
+            request(options.url)
+                ['on']('error', (response) => {
                 reject({
-                    status: response.statusCode,
-                    msg: 'Response status code must be 200',
-                    resource: options.url
+                    status: 0,
+                    msg: 'Request error: ' + response.code,
+                    resource: options.url,
                 });
                 hooks.complete && hooks.complete();
-            }
+            })
+                ['on']('response', (response) => {
+                let suffix = mimeTypes['extension'](response.headers['content-type']);
 
-        });
+                let fileName = options.fileName || (Download.makeKey() + '.' + suffix);
+                fileName = (options.autoSuffix === true && options.fileName) ? (fileName + '.' + suffix) : fileName;
+                let filePath = path.resolve(options.dir, fileName);
+
+                if (response.statusCode === 200) {
+                    response.pipe(fs.createWriteStream(filePath))
+                        .on('close', () => {
+
+                            resolve({
+                                status: 200,
+                                msg: 'success',
+                                resource: options.url,
+                                data: {
+                                    filePath: filePath,
+                                    contentType: response.headers['content-type'],
+                                }
+                            });
+                            hooks.complete && hooks.complete();
+                        });
+
+                } else {
+                    reject({
+                        status: response.statusCode,
+                        msg: 'Response error: The status code is not 200',
+                        resource: options.url
+                    });
+                    hooks.complete && hooks.complete();
+                }
+
+            });
+        } catch (e) {
+            reject({
+                status: 0,
+                msg: 'Request error: ' + e.message,
+                resource: options.url
+            });
+            hooks.complete && hooks.complete();
+        }
 
     });
 };
-
-
-function Download() {
-    this.list = [];
-    this.downloadDefaultConfig = {meanwhile: 1, dir: ''};
-    this.optionConfig = {};
-    this.defaultOptionConfig = {
-        dir: this.downloadDefaultConfig.dir,
-        fileName: null,
-        autoSuffix: false
-    };
-}
 
 
 Download.prototype.exec = function () {

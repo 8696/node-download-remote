@@ -167,4 +167,68 @@ res3.then(res => {
 
 
 
+
+
+// *** 004
+
+// 错误处理
+// 1、在exec执行下载时为保证其他下载继续，返回的中promise永远不会得到reject状态
+// 2、如遇远程资源无法访问、http响应非200或者请求地址错误时(非完整http地址)，会在resolve状态中数组得到相应信息，如下
+let download2 = new Download();
+download2.setConfig({
+    dir: path.resolve(__dirname + '/uploads/uploads11'),
+});
+
+download2.push([
+    'https://www.google.com',
+    'https://www.sogou.com',
+    'https://www.sogou.com/404',
+    'www.google.com',
+]);
+
+let res4 = download2.exec();
+
+res4.then(res => {
+    console.log(res);
+    /*
+    [
+        { status: 0,
+        msg: 'Request error: ETIMEDOUT',
+        resource: 'https://www.google.com' },
+
+        { status: 200,
+        msg: 'success',
+        resource: 'https://www.sogou.com',
+        data:
+        { filePath: 'D:\\1a\\github\\node-download-remote\\test\\uploads\\uploads11\\32f975aedae444d68a55db7943390be7.html',
+        contentType: 'text/html; charset=UTF-8' } },
+
+        { status: 404,
+        msg: 'Response error: The status code is not 200',
+        resource: 'https://www.sogou.com/404' },
+        
+        { status: 0,
+        msg: 'Request error: Invalid URI "www.google.com"',
+        resource: 'www.google.com' }
+    ]
+    */
+});
+
+
+
+
+// *** 005
+
+// 依赖模块
+console.log(Download.request)
+console.log(Download.makeDir)
+console.log(Download.nodeUuid)
+console.log(Download.mimeTypes)
 ```
+
+####依赖模块
+
+- [request](https://github.com/request/request)
+- [make-dir](https://https://github.com/sindresorhus/make-dir)
+- [node-uuid](https://github.com/broofa/node-uuid)
+- [mimeTypes](https://github.com/jshttp/mime-types)
