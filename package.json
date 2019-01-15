@@ -1,6 +1,6 @@
 {
-  "name": "node-download-remote",
-  "version": "1.0.0",
+  "name": "node-remote-file-save",
+  "version": "1.0.1",
   "description": "nodejs下载远程文件",
   "main": "main.js",
   "scripts": {
@@ -24,7 +24,6 @@
   },
   "keywords": [
     "download",
-    "download-file",
-    "download-remote"
+    "download-file"
   ]
 }

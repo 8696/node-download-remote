@@ -6,7 +6,7 @@
 
 #### 安装
 
-- (c)npm install node-download-remote -D
+- (c)npm install node-remote-file-save -D
 
 
 #### 使用
