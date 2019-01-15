@@ -43,7 +43,7 @@ Download.download = function (options, hooks = {}) {
                 let suffix = mimeTypes['extension'](response.headers['content-type']);
 
                 let fileName = options.fileName || (Download.makeKey() + '.' + suffix);
-                fileName = options.autoSuffix === true ? (fileName + '.' + suffix) : fileName;
+                fileName = (options.autoSuffix === true && options.fileName) ? (fileName + '.' + suffix) : fileName;
                 let filePath = path.resolve(options.dir, fileName);
 
                 if (response.statusCode === 200) {

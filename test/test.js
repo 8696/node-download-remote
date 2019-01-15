@@ -41,9 +41,9 @@ let list = [
 
 download.push({
     url: 'https://www.baidu.com',
-    dir: path.resolve(__dirname + '/uploads4'),
-    fileName: 'uploads.html',
-    autoSuffix: true
+    dir: path.resolve(__dirname + '/uploads/uploads4'),
+    // fileName: 'uploads.html',
+    // autoSuffix: true
 });
 
 let aaa = download.exec();
