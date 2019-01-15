@@ -211,9 +211,6 @@ console.log(Download.request);
 console.log(Download.makeDir);
 console.log(Download.nodeUuid);
 console.log(Download.mimeTypes);
-// console.log(Download.makeDir(path.resolve(__dirname,'./uploads/a/b/c/d')))
-
-
 
 
 

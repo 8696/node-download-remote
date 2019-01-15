@@ -220,10 +220,10 @@ res4.then(res => {
 // *** 005
 
 // 依赖模块
-console.log(Download.request)
-console.log(Download.makeDir)
-console.log(Download.nodeUuid)
-console.log(Download.mimeTypes)
+console.log(Download.request);
+console.log(Download.makeDir);
+console.log(Download.nodeUuid);
+console.log(Download.mimeTypes);
 ```
 
 #### 依赖模块
