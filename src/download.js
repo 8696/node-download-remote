@@ -15,7 +15,7 @@ Download.makeKey = function () {
     s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);
     return s.join('');
 };
-
+let k = 0;
 
 Download.download = function (options, hooks = {}) {
     return new Promise(async (resolve, reject) => {
@@ -30,6 +30,7 @@ Download.download = function (options, hooks = {}) {
         hooks.start && hooks.start();
 
         setTimeout(function () {
+            console.error('k' + (++k));
             request(options.url)
                 ['on']('error', (response) => {
                 reject({
@@ -96,6 +97,7 @@ Download.prototype.exec = function () {
             i = 0,
             l = this.list.length,
             end = () => {
+                --k;
                 if (j === l) {
                     resolve(data);
                 }

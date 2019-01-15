@@ -18,17 +18,20 @@ res.then(res => {
 let download = new Download();
 
 download.setConfig({
-    dir: path.resolve(__dirname + '/uploads'),
-    meanwhile: 1,
+    dir: path.resolve(__dirname + '/uploads/uploads10'),
+    meanwhile: 2,
 });
 
 let list = [
-    // 'http://v.51vimeo.com/data/attachment/video/1809/27/5bac3f15a4397.mp4',
-    // 'https://www.baidu.com',
-    // 'http://v.51vimeo.com/data/attachment/video/1809/27/5bac3f15a4397.mp4',
-    // 'http://v.51vimeo.com/data/attachment/video/1809/27/5bac3f15a4397.mp4',
-    // 'https://www.google.com',
-    // 'https://www.baidu.com',
+    'https://www.baidu.com',
+    'https://www.google.com',
+    'https://www.baidu.com',
+    'https://www.baidu.com',
+    'https://www.baidu.com',
+    'https://www.google.com',
+    'https://www.baidu.com',
+    'https://www.baidu.com',
+    'https://www.baidu.com',
     {
         url: 'https://www.baidu.com',
         // dir: path.resolve(__dirname + '/uploads4'),
@@ -39,12 +42,7 @@ let list = [
 ];
 
 
-download.push({
-    url: 'https://www.baidu.com',
-    dir: path.resolve(__dirname + '/uploads/uploads4'),
-    // fileName: 'uploads.html',
-    // autoSuffix: true
-});
+download.push(list);
 
 let aaa = download.exec();
 
