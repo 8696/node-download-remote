@@ -1,19 +1,15 @@
 const request = require('request');
 const mimeTypes = require('mime-types');
 const makeDir = require('make-dir');
+const uuid = require('node-uuid');
 const path = require('path');
 const fs = require('fs');
 const cache = new Map();
 
+Download.makeDir = makeDir;
+
 Download.makeKey = function () {
-    let s = [],
-        hexDigits = '1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
-    for (let i = 0; i < 36; i++) {
-        s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
-    }
-    s[14] = '4';
-    s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);
-    return s.join('');
+    return uuid.v4().replace(/-/g, '');
 };
 let k = 0;
 
@@ -50,6 +46,7 @@ Download.download = function (options, hooks = {}) {
                 if (response.statusCode === 200) {
                     response.pipe(fs.createWriteStream(filePath))
                         .on('close', () => {
+
                             resolve({
                                 status: 200,
                                 msg: 'success',
@@ -163,11 +160,22 @@ Download.prototype.push = function (options) {
     }
     this.list.forEach((item, index) => {
         // 独立配置
-        if (typeof item === 'string') {
-            this.list[index] = Object.assign(JSON.parse(JSON.stringify(this.defaultOptionConfig)), {url: item});
-        } else if (typeof item === 'object') {
-            this.list[index] = Object.assign(JSON.parse(JSON.stringify(this.defaultOptionConfig)), item);
+
+
+        switch (Object.prototype.toString.call(item)) {
+            case '[object String]': {
+                this.list[index] = Object.assign(JSON.parse(JSON.stringify(this.defaultOptionConfig)), {url: item});
+
+                break;
+            }
+            case '[object Object]': {
+                this.list[index] = Object.assign(JSON.parse(JSON.stringify(this.defaultOptionConfig)), item);
+                break;
+
+            }
+
         }
+
 
     });
 

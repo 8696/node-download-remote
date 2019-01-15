@@ -49,6 +49,29 @@ let aaa = download.exec();
 aaa.then(res => {
     console.log(res.length);
     console.log(res);
+}).catch(err=>{
+    console.error(err)
 });
+
+
+
+
+
+
+
+// console.log(Download.makeDir(path.resolve(__dirname,'./uploads/a/b/c/d')))
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
