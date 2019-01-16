@@ -1,16 +1,14 @@
 const request = require('request');
 const mimeTypes = require('mime-types');
 const makeDir = require('make-dir');
-const uuid = require('node-uuid');
 const path = require('path');
 const fs = require('fs');
+const commApi = require('./comm.api');
 const cache = new Map();
 
-Download.nodeUuid = uuid;
 Download.makeDir = makeDir;
 Download.request = request;
 Download.mimeTypes = mimeTypes;
-
 
 
 function Download() {
@@ -23,8 +21,9 @@ function Download() {
         autoSuffix: false
     };
 }
+
 Download.makeKey = function () {
-    return uuid.v4().replace(/-/g, '');
+    return commApi.makeRandom() + '_' + commApi.getDateTime().replace(/( |:|-)/g, '') + '_' + new Date().getTime();
 };
 
 Download.download = function (options, hooks = {}) {
