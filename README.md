@@ -229,5 +229,5 @@ console.log(Download.mimeTypes);
 #### 依赖模块
 
 - [request](https://github.com/request/request)
-- [make-dir](https://https://github.com/sindresorhus/make-dir)
+- [make-dir](https://github.com/sindresorhus/make-dir)
 - [mimeTypes](https://github.com/jshttp/mime-types)
