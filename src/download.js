@@ -49,7 +49,9 @@ Download.download = function (options, hooks = {}) {
                 hooks.complete && hooks.complete();
             })
                 ['on']('response', (response) => {
-                let suffix = mimeTypes['extension'](response.headers['content-type']);
+                // let suffix = mimeTypes['extension'](response.headers['content-type']);
+
+                let suffix = 'application/octet-stream' === response.headers['content-type'] ? options.url.split('.').pop() : mimeTypes['extension'](response.headers['content-type']);
 
                 let fileName = options.fileName || (Download.makeKey() + '.' + suffix);
                 fileName = (options.autoSuffix === true && options.fileName) ? (fileName + '.' + suffix) : fileName;
