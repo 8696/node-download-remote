@@ -49,9 +49,17 @@ Download.download = function (options, hooks = {}) {
                 hooks.complete && hooks.complete();
             })
                 ['on']('response', (response) => {
-                // let suffix = mimeTypes['extension'](response.headers['content-type']);
 
-                let suffix = 'application/octet-stream' === response.headers['content-type'] ? options.url.split('.').pop() : mimeTypes['extension'](response.headers['content-type']);
+                let suffix;
+                if (response.headers['content-disposition'] && 'application/octet-stream' === response.headers['content-type']) {
+                    suffix = response.headers['content-disposition'].split(';')[1].split('.').pop();
+                } else if ('application/octet-stream' === response.headers['content-type']) {
+                    let url = options.url;
+                    url = url.includes('?') ? url.split('?')[0] : url;
+                    suffix = url.split('.').pop();
+                } else {
+                    suffix = mimeTypes['extension'](response.headers['content-type']);
+                }
 
                 let fileName = options.fileName || (Download.makeKey() + '.' + suffix);
                 fileName = (options.autoSuffix === true && options.fileName) ? (fileName + '.' + suffix) : fileName;
