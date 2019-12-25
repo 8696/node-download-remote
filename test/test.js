@@ -164,42 +164,42 @@ res3.then(res => {
 // 2、如遇远程资源无法访问、http响应非200或者请求地址错误时(非完整http地址)，会在resolve状态中数组得到相应信息，如下
 let download2 = new Download();
 download2.setConfig({
-    dir: path.resolve(__dirname + '/uploads/uploads11'),
+  dir: path.resolve(__dirname + '/uploads/uploads11'),
 });
 
 download2.push([
-    'https://www.google.com',
-    'https://www.sogou.com',
-    'https://www.sogou.com/404',
-    'www.google.com',
+  'https://www.google.com',
+  'https://www.sogou.com',
+  'https://www.sogou.com/404',
+  'www.google.com',
 ]);
 
 let res4 = download2.exec();
 
 res4.then(res => {
-    console.log(res);
+  console.log(res);
 
-    /*[
-        { status: 0,
-        msg: 'Request error: ETIMEDOUT',
-        resource: 'https://www.google.com' },
+  /*[
+      { status: 0,
+      msg: 'Request error: ETIMEDOUT',
+      resource: 'https://www.google.com' },
 
-        { status: 200,
-        msg: 'success',
-        resource: 'https://www.sogou.com',
-        data:
-        { filePath: 'D:\\1a\\github\\node-download-remote\\test\\uploads\\uploads11\\32f975aedae444d68a55db7943390be7.html',
-        contentType: 'text/html; charset=UTF-8' } },
+      { status: 200,
+      msg: 'success',
+      resource: 'https://www.sogou.com',
+      data:
+      { filePath: 'D:\\1a\\github\\node-download-remote\\test\\uploads\\uploads11\\32f975aedae444d68a55db7943390be7.html',
+      contentType: 'text/html; charset=UTF-8' } },
 
-        { status: 404,
-        msg: 'Response error: The status code is not 200',
-        resource: 'https://www.sogou.com/404' },
+      { status: 404,
+      msg: 'Response error: The status code is not 200',
+      resource: 'https://www.sogou.com/404' },
 
-        { status: 0,
-        msg: 'Request error: Invalid URI "www.google.com"',
-        resource: 'www.google.com' }
-    ]
-    */
+      { status: 0,
+      msg: 'Request error: Invalid URI "www.google.com"',
+      resource: 'www.google.com' }
+  ]
+  */
 });
 /*
 
