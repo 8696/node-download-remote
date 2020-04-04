@@ -10,7 +10,7 @@
 
 
 #### 使用
-##### 
+
 ```javascript
 const Download = require('node-remote-file-save');
 const path = require('path');
@@ -36,7 +36,6 @@ res.then(res => {
     }
     * */
 });
-
 
 
 
